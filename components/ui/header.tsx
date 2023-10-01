@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <div className="header">
+    <header className="header">
       {/* 로고 / 검색 컴포넌트 / 프로필 */}
 
       {/* 로고 */}
@@ -24,10 +24,6 @@ export default function Header() {
       </div>
 
       <style jsx>{`
-        img {
-          background-color: white;
-        }
-
         .header {
           display: flex;
           justify-content: space-between;
@@ -76,6 +72,6 @@ export default function Header() {
           width: 30px;
         }
       `}</style>
-    </div>
+    </header>
   );
 }

@@ -17,7 +17,7 @@ export default function Wrapper({ children }: WrapperProps) {
 
       <style jsx global>{`
         body {
-          min-height: 100vh;
+          height: 100vh;
         }
 
         .container {

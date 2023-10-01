@@ -1,6 +1,6 @@
 export default function Navigation() {
   return (
-    <div className="navigation">
+    <nav className="navigation">
       <div className="nav-item">Home</div>
       <div className="nav-item">Lead</div>
       <div className="nav-item">Acount</div>
@@ -31,6 +31,6 @@ export default function Navigation() {
           font-weight: 600;
         }
       `}</style>
-    </div>
+    </nav>
   );
 }
