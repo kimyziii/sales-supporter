@@ -1,11 +1,34 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
 export default function Navigation() {
+  const [pathname, setPathname] = useState("/");
+
+  const router = useRouter();
+  const query = router.pathname;
+
+  useEffect(() => {
+    setPathname(query);
+  }, [query]);
+
   return (
     <nav className="navigation">
-      <div className="nav-item">Home</div>
-      <div className="nav-item">Lead</div>
-      <div className="nav-item">Acount</div>
-      <div className="nav-item">Contact</div>
-      <div className="nav-item">Opportunity</div>
+      <Link href="/" style={{ textDecoration: "none" }}>
+        <div className="nav-item nav-item__home">Home</div>
+      </Link>
+      <Link href="/lead" style={{ textDecoration: "none" }}>
+        <div className="nav-item nav-item__lead">Lead</div>
+      </Link>
+      <Link href="/account" style={{ textDecoration: "none" }}>
+        <div className="nav-item nav-item__account">Account</div>
+      </Link>
+      <Link href="/contact" style={{ textDecoration: "none" }}>
+        <div className="nav-item nav-item__contact">Contact</div>
+      </Link>
+      <Link href="/opportunity" style={{ textDecoration: "none" }}>
+        <div className="nav-item nav-item__opportunity">Opportunity</div>
+      </Link>
 
       <style jsx>{`
         .navigation {
@@ -13,6 +36,7 @@ export default function Navigation() {
           height: 35px;
           margin: 0 auto;
           margin-top: 15px;
+          margin-bottom: 15px;
           display: grid;
           grid-template-columns: repeat(5, 1fr);
           column-gap: 16px;
@@ -24,11 +48,39 @@ export default function Navigation() {
           cursor: pointer;
           display: flex;
           align-items: center;
-          height: 100%;
+          height: 35px;
           padding: 0 15px;
           border: 1px solid #dedede;
+          border-radius: 7px;
           box-shadow: #dedede 2.4px 2.4px 3.2px;
           font-weight: 600;
+        }
+
+        .nav-item__home {
+          background-color: ${pathname === "/" ? "#000000" : "#ffffff"};
+          color: ${pathname === "/" ? "white" : "black"};
+        }
+
+        .nav-item__lead {
+          background-color: ${pathname === "/lead" ? "#000000" : "#ffffff"};
+          color: ${pathname === "/lead" ? "white" : "black"};
+        }
+
+        .nav-item__account {
+          background-color: ${pathname === "/account" ? "#000000" : "#ffffff"};
+          color: ${pathname === "/account" ? "white" : "black"};
+        }
+
+        .nav-item__contact {
+          background-color: ${pathname === "/contact" ? "#000000" : "#ffffff"};
+          color: ${pathname === "/contact" ? "white" : "black"};
+        }
+
+        .nav-item__opportunity {
+          background-color: ${pathname === "/opportunity"
+            ? "#000000"
+            : "#ffffff"};
+          color: ${pathname === "/opportunity" ? "white" : "black"};
         }
       `}</style>
     </nav>

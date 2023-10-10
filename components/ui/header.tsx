@@ -1,16 +1,18 @@
+import Link from "next/link";
+
 export default function Header() {
   return (
     <header className="header">
       {/* 로고 / 검색 컴포넌트 / 프로필 */}
 
       {/* 로고 */}
-      <div className="presentation" role="presentation">
+      <Link href="/" className="presentation" role="presentation">
         <img
           className="logo"
           src="/images/sales-support-logo.png"
           alt="salesSupportLogo"
         />
-      </div>
+      </Link>
 
       {/* 검색 */}
       <div className="searchWrapper">
