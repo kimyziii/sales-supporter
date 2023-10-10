@@ -3,7 +3,6 @@ import Modal from "./modal";
 import NewLead from "../lead/lead-new";
 
 import { useEffect, useState } from "react";
-import { db } from "@/firebaseApp";
 
 interface ListViewProps {
   pathname: string;
