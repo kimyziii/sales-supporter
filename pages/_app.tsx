@@ -1,7 +1,6 @@
 import Header from "@/components/ui/header";
 import ListView from "@/components/ui/list-view";
 import Navigation from "@/components/ui/navigation";
-import app from "../firebaseApp";
 
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
