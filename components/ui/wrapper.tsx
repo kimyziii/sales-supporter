@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "./header";
+import ListView from "./list-view";
 import Navigation from "./navigation";
 
 interface WrapperProps {
@@ -8,10 +9,11 @@ interface WrapperProps {
 
 export default function Wrapper({ children }: WrapperProps) {
   return (
-    <div>
+    <>
       <div className="container">
         <Header />
         <Navigation />
+        {/* <ListView /> */}
         <main className="content">{children}</main>
       </div>
 
@@ -22,17 +24,20 @@ export default function Wrapper({ children }: WrapperProps) {
 
         .container {
           display: flex;
-          height: calc(100vh - 100px);
+          min-height: calc(100vh - 20px);
+          height: fit-content;
           flex-direction: column;
         }
 
         .content {
           flex-grow: 1;
+          width: 90%;
+          margin: 0 auto;
+          margin-top: 5px;
           display: flex;
-          padding: 10px 40px;
-          overflow: scroll;
+          // overflow: scroll;
         }
       `}</style>
-    </div>
+    </>
   );
 }

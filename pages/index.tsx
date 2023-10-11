@@ -1,5 +1,11 @@
+import Wrapper from "@/components/ui/wrapper";
+
 function HomePage() {
-  return <div>홈페이지!</div>;
+  return (
+    <Wrapper>
+      <div>홈페이지!</div>
+    </Wrapper>
+  );
 }
 
 export default HomePage;

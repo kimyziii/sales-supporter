@@ -1,19 +1,15 @@
 import ListView from "../../components/ui/list-view";
-import Wrapper from "@/components/ui/wrapper";
 import { useRouter } from "next/router";
+import Wrapper from "@/components/ui/wrapper";
 
 function LeadPage() {
   const router = useRouter();
   const pathname = router.pathname;
 
-  console.log(`LeadPage Rendering Completed`);
-
   return (
-    // <div>
     <Wrapper>
       <ListView pathname={pathname} />
     </Wrapper>
-    // </div>
   );
 }
 
