@@ -10,7 +10,6 @@ function Modal({ children, closeModal }: ModalProp) {
     <div className="modal-wrapper">
       <div className="modal-backdrop" onClick={closeModal}></div>
       <div className="modal">
-        <div className="header">새로 만들기</div>
         <div className="content">{children}</div>
       </div>
 
@@ -38,6 +37,7 @@ function Modal({ children, closeModal }: ModalProp) {
           background-color: white;
           z-index: 100;
           width: 70%;
+          max-width: 70%;
           display: fixed;
           top: 30px;
           height: fit-content;
@@ -52,6 +52,7 @@ function Modal({ children, closeModal }: ModalProp) {
           border-bottom: 1px solid #dedede;
           font-size: 20px;
           font-weight: 600;
+          padding: 5px 0;
         }
 
         .content {

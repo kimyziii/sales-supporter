@@ -66,6 +66,7 @@ const NewLead: React.FC<NewLeadProps> = ({ closeModal }) => {
 
   return (
     <div className="body">
+      <header className="header">새로운 리드</header>
       <div className="section">
         <h3>담당자 정보</h3>
         <div className="section-row">
@@ -210,6 +211,9 @@ const NewLead: React.FC<NewLeadProps> = ({ closeModal }) => {
       <style jsx>{`
         .body {
           width: 100%;
+          height: 70vh;
+          overflow-y: scroll;
+          overflow-x: hidden;
           margin: 0 auto;
           font-size: 14px;
           display: flex;
@@ -240,6 +244,16 @@ const NewLead: React.FC<NewLeadProps> = ({ closeModal }) => {
         .body label {
           width: 50px;
           font-size: 13px;
+        }
+
+        .header {
+          width: 100%;
+          font-size: 20px;
+          font-weight: 600;
+          text-align: center;
+          padding: 10px 0;
+          margin: 0 auto;
+          border-bottom: 1px solid #dedede;
         }
 
         .section {
@@ -286,7 +300,7 @@ const NewLead: React.FC<NewLeadProps> = ({ closeModal }) => {
           gap: 10px;
           height: fit-content;
           border-top: 1px solid #dedede;
-          padding: 10px 20px;
+          padding: 20px 20px;
         }
 
         .footer-btn {
