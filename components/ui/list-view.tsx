@@ -1,8 +1,10 @@
 import React from "react";
-import Modal from "./modal";
+import Modal from "./modal/modal";
 import NewLead from "../lead/lead-new";
 
 import { useEffect, useState } from "react";
+import { db } from "@/firebaseApp";
+import { collection, doc, getDocs } from "firebase/firestore";
 
 interface ListViewProps {
   pathname: string;
@@ -11,6 +13,8 @@ interface ListViewProps {
 export default function ListView({ pathname }: ListViewProps) {
   const [name, setName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const [nullData, setNullData] = useState(false);
 
   useEffect(() => {
     if (pathname === "/") setName("홈");
@@ -32,7 +36,7 @@ export default function ListView({ pathname }: ListViewProps) {
     <>
       {isOpen && (
         <Modal closeModal={handleCloseModal}>
-          <NewLead closeModal={handleCloseModal} />
+          {pathname === "/lead" && <NewLead closeModal={handleCloseModal} />}
         </Modal>
       )}
       <div className="list-view">
@@ -47,7 +51,7 @@ export default function ListView({ pathname }: ListViewProps) {
         </div>
 
         {/* data list view */}
-        <div></div>
+        {nullData && <p>데이터가 없습니다.</p>}
 
         <style jsx>{`
           .list-view {
@@ -58,6 +62,7 @@ export default function ListView({ pathname }: ListViewProps) {
             margin: 0 auto;
             margin-top: 5px;
             display: flex;
+            flex-direction: column;
           }
 
           .list-view__header {
