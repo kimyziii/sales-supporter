@@ -1,28 +1,28 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="header">
+    <header className='header'>
       {/* 로고 / 검색 컴포넌트 / 프로필 */}
 
       {/* 로고 */}
-      <Link href="/" className="presentation" role="presentation">
+      <Link href='/' className='presentation' role='presentation'>
         <img
-          className="logo"
-          src="/images/sales-support-logo.png"
-          alt="salesSupportLogo"
+          className='logo'
+          src='/images/sales-support-logo.png'
+          alt='salesSupportLogo'
         />
       </Link>
 
       {/* 검색 */}
-      <div className="searchWrapper">
-        <input className="searchInput" />
-        <img className="searchIcon" src="/icons/search.svg" />
+      <div className='searchWrapper'>
+        <input className='searchInput' />
+        <img className='searchIcon' src='/icons/search.svg' />
       </div>
 
       {/* 프로필 */}
-      <div className="presentation" role="presentation">
-        <img className="image" src="/icons/profile.svg" alt="profileLogo" />
+      <div className='presentation' role='presentation'>
+        <img className='image' src='/icons/profile.svg' alt='profileLogo' />
       </div>
 
       <style jsx>{`
@@ -73,7 +73,19 @@ export default function Header() {
         .image {
           width: 30px;
         }
+
+        @media screen and (min-width: 1300px) {
+          .header {
+            margin: 10px 60px;
+          }
+        }
+
+        @media screen and (min-width: 1500px) {
+          .header {
+            margin: 10px 80px;
+          }
+        }
       `}</style>
     </header>
-  );
+  )
 }

@@ -1,7 +1,9 @@
 import React from "react";
 import Header from "./header";
-import ListView from "./list-view";
 import Navigation from "./navigation";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface WrapperProps {
   children: React.ReactNode;
@@ -13,7 +15,8 @@ export default function Wrapper({ children }: WrapperProps) {
       <div className="container">
         <Header />
         <Navigation />
-        {/* <ListView /> */}
+
+        <ToastContainer />
         <main className="content">{children}</main>
       </div>
 

@@ -1,33 +1,33 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 export default function Navigation() {
-  const [pathname, setPathname] = useState("/");
+  const [pathname, setPathname] = useState('/')
 
-  const router = useRouter();
-  const query = router.pathname;
+  const router = useRouter()
+  const query = router.pathname
 
   useEffect(() => {
-    setPathname(query);
-  }, [query]);
+    setPathname(query)
+  }, [query])
 
   return (
-    <nav className="navigation">
-      <Link href="/" style={{ textDecoration: "none" }}>
-        <div className="nav-item nav-item__home">Home</div>
+    <nav className='navigation'>
+      <Link href='/' style={{ textDecoration: 'none' }}>
+        <div className='nav-item nav-item__home'>Home</div>
       </Link>
-      <Link href="/lead" style={{ textDecoration: "none" }}>
-        <div className="nav-item nav-item__lead">Lead</div>
+      <Link href='/lead' style={{ textDecoration: 'none' }}>
+        <div className='nav-item nav-item__lead'>Lead</div>
       </Link>
-      <Link href="/account" style={{ textDecoration: "none" }}>
-        <div className="nav-item nav-item__account">Account</div>
+      <Link href='/account' style={{ textDecoration: 'none' }}>
+        <div className='nav-item nav-item__account'>Account</div>
       </Link>
-      <Link href="/contact" style={{ textDecoration: "none" }}>
-        <div className="nav-item nav-item__contact">Contact</div>
+      <Link href='/contact' style={{ textDecoration: 'none' }}>
+        <div className='nav-item nav-item__contact'>Contact</div>
       </Link>
-      <Link href="/opportunity" style={{ textDecoration: "none" }}>
-        <div className="nav-item nav-item__opportunity">Opportunity</div>
+      <Link href='/opportunity' style={{ textDecoration: 'none' }}>
+        <div className='nav-item nav-item__opportunity'>Opportunity</div>
       </Link>
 
       <style jsx>{`
@@ -57,32 +57,38 @@ export default function Navigation() {
         }
 
         .nav-item__home {
-          background-color: ${pathname === "/" ? "#000000" : "#ffffff"};
-          color: ${pathname === "/" ? "white" : "black"};
+          background-color: ${pathname === '/' ? '#000000' : '#ffffff'};
+          color: ${pathname === '/' ? 'white' : 'black'};
         }
 
         .nav-item__lead {
-          background-color: ${pathname === "/lead" ? "#000000" : "#ffffff"};
-          color: ${pathname === "/lead" ? "white" : "black"};
+          background-color: ${pathname.includes('lead')
+            ? '#000000'
+            : '#ffffff'};
+          color: ${pathname.includes('lead') ? 'white' : 'black'};
         }
 
         .nav-item__account {
-          background-color: ${pathname === "/account" ? "#000000" : "#ffffff"};
-          color: ${pathname === "/account" ? "white" : "black"};
+          background-color: ${pathname.includes('account')
+            ? '#000000'
+            : '#ffffff'};
+          color: ${pathname.includes('account') ? 'white' : 'black'};
         }
 
         .nav-item__contact {
-          background-color: ${pathname === "/contact" ? "#000000" : "#ffffff"};
-          color: ${pathname === "/contact" ? "white" : "black"};
+          background-color: ${pathname.includes('contact')
+            ? '#000000'
+            : '#ffffff'};
+          color: ${pathname.includes('contact') ? 'white' : 'black'};
         }
 
         .nav-item__opportunity {
-          background-color: ${pathname === "/opportunity"
-            ? "#000000"
-            : "#ffffff"};
-          color: ${pathname === "/opportunity" ? "white" : "black"};
+          background-color: ${pathname.includes('opportunity')
+            ? '#000000'
+            : '#ffffff'};
+          color: ${pathname.includes('opportunity') ? 'white' : 'black'};
         }
       `}</style>
     </nav>
-  );
+  )
 }
