@@ -529,15 +529,6 @@
   "resolved" "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   "version" "0.4.0"
 
-"axios@^1.5.1":
-  "integrity" "sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-1.5.1.tgz"
-  "version" "1.5.1"
-  dependencies:
-    "follow-redirects" "^1.15.0"
-    "form-data" "^4.0.0"
-    "proxy-from-env" "^1.1.0"
-
 "braces@^3.0.2":
   "integrity" "sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A=="
   "resolved" "https://registry.npmjs.org/braces/-/braces-3.0.2.tgz"
