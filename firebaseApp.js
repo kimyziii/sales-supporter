@@ -1,17 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyCvJq5JUY8ouoWlLAivEuNnh5BzKJKzjPc',
-//   authDomain: 'sales-supporter-98a84.firebaseapp.com',
-//   databaseURL:
-//     'https://sales-supporter-98a84-default-rtdb.asia-southeast1.firebasedatabase.app',
-//   projectId: 'sales-supporter-98a84',
-//   storageBucket: 'sales-supporter-98a84.appspot.com',
-//   messagingSenderId: '890299206018',
-//   appId: '1:890299206018:web:c6e11482932c6af971679b',
-// }
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
