@@ -1,0 +1,97 @@
+:root {
+  --max-width: 1100px;
+  --border-radius: 7px;
+
+  --primary-color: rgb(250, 254, 255);
+  --secondary-color: rgb(250, 254, 255);
+  --tertiary-color: rgb(64, 217, 255);
+  --selected-color: rgb(222, 248, 255);
+
+  --highlight-color: #ebfafeb1;
+  --highlight-border-color: rgb(188, 232, 243);
+  --primary-text-color: black;
+  --secondary-text-color: rgba(0, 0, 0, 0.5);
+
+  --text-lg: 18px;
+  --text-md: 16px;
+  --text-sm: 14px;
+  --caption: 12px;
+
+  --button-gray-color: #f0f0f0;
+  --button-gray-border-color: #e5e5e5;
+  --button-point-color: rgba(64, 217, 255, 0.8);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  background: transparent;
+}
+
+li {
+  list-style: none;
+}
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-gray-color) var(--secondary-color);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: white;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--button-gray-border-color);
+  border-radius: 20px;
+  border: 3px solid white;
+}
+
+@font-face {
+  font-family: 'NeoDunggeunmoPro-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/NeoDunggeunmoPro-Regular.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GyeonggiTitleM';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GyeonggiTitleM.woff')
+    format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUIT-400';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2')
+    format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUIT-600';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Bold.woff2')
+    format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
