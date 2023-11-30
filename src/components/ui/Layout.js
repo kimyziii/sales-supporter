@@ -7,7 +7,6 @@ import Loader from './Loader'
 
 export default function Layout({ children }) {
   const auth = getAuth(app)
-
   // auth에 currentUser 있을 경우 true
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -34,10 +33,8 @@ export default function Layout({ children }) {
             <main className='main'>{children}</main>
           </>
         )}
-        {!isAuthenticated && init && (
-          <SignPage isAuthenticated={isAuthenticated} />
-        )}
-        {!isAuthenticated && !init && <Loader />}
+        {!isAuthenticated && init && <SignPage />}
+        {/* {!isAuthenticated && !init && <Loader />} */}
       </div>
 
       <style jsx>
