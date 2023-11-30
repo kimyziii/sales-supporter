@@ -1,7 +1,11 @@
-export default function FormButton({ onClick, value, type }) {
+export default function FormButton({ onClick, value, type, disabled = false }) {
   return (
     <>
-      <button onClick={onClick} className={`${type} button`}>
+      <button
+        onClick={onClick}
+        className={`${type} button`}
+        disabled={disabled}
+      >
         {value}
       </button>
       <style jsx>{`
@@ -18,6 +22,10 @@ export default function FormButton({ onClick, value, type }) {
         }
 
         .cancel {
+          background: var(--button-gray-color: #f0f0f0;);
+        }
+
+        .disabled {
           background: var(--button-gray-color: #f0f0f0;);
         }
       `}</style>
