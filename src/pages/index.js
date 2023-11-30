@@ -1,12 +1,19 @@
 import Head from 'next/head'
-import HomePage from './home'
+
 export default function Home() {
   return (
     <>
       <Head>
         <title>Sales-Supporter</title>
       </Head>
-      <HomePage />
+      <main>
+        <div>Home Page</div>
+        <style jsx>{`
+          * {
+            background-color: transparent;
+          }
+        `}</style>
+      </main>
     </>
   )
 }
