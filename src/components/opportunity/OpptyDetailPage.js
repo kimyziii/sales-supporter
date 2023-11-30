@@ -4,7 +4,6 @@ import DetailRow from '../ui/detail/Row'
 import DetailField from '../ui/detail/Field'
 
 export default function OpptyDetailPage({ selectedObj }) {
-  console.table(selectedObj)
   return (
     <DetailPage>
       {/* 기회 정보 */}
