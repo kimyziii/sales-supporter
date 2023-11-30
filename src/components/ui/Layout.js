@@ -1,11 +1,20 @@
+import { useState } from 'react'
+import SignUpForm from '../signup'
 import SideBar from './Sidebar'
 
 export default function Layout({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
   return (
     <>
       <div className='layout'>
-        <SideBar />
-        <main className='main'>{children}</main>
+        {isAuthenticated && (
+          <>
+            <SideBar />
+            <main className='main'>{children}</main>
+          </>
+        )}
+        {!isAuthenticated && <SignUpForm />}
       </div>
 
       <style jsx>
