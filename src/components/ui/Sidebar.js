@@ -1,8 +1,21 @@
 import { useRouter } from 'next/router'
+import { getAuth, signOut } from 'firebase/auth'
 import Navigation from './Navigation'
+import { app } from '../../../firebaseApp'
+import { toast } from 'react-toastify'
 
 export default function SideBar() {
   const router = useRouter()
+
+  async function onSignOut() {
+    const auth = getAuth(app)
+    try {
+      await signOut(auth)
+      toast.success('성공적으로 로그아웃하였습니다.')
+    } catch (error) {
+      toast.error(error.code)
+    }
+  }
 
   function handleClick() {
     router.push('/')
@@ -28,9 +41,11 @@ export default function SideBar() {
         </div>
 
         {/* 로그아웃 */}
-        <div className='logout'>
+        <div className='logout' onClick={onSignOut}>
           <img src='icons/logout.svg' />
-          <span>Logout</span>
+          <div className='logout-btn' role='presentation'>
+            Logout
+          </div>
         </div>
       </div>
 
@@ -98,6 +113,11 @@ export default function SideBar() {
 
         .logout img {
           width: 15px;
+        }
+
+        .logout-btn {
+          cursor: pointer;
+          z-index: 9999;
         }
       `}</style>
     </>
