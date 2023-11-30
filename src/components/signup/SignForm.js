@@ -13,8 +13,11 @@ import FromButtonGroup from '../ui/form/FormButtonGroup'
 import FormField from '../ui/form/FormField'
 import FormRow from '../ui/form/FormRow'
 import FormSection from '../ui/form/FormSection'
+import { useRouter } from 'next/router'
 
 export default function SignForm() {
+  const router = useRouter()
+
   const [error, setError] = useState('')
 
   const [email, setEmail] = useState('')
@@ -39,11 +42,11 @@ export default function SignForm() {
       toast.success('로그인에 성공했습니다.', {
         position: toast.POSITION.TOP_RIGHT,
       })
+      router.push('/')
     } catch (error) {
       toast.error(error.code, {
         position: toast.POSITION.TOP_RIGHT,
       })
-      console.log(error)
     }
   }
 
@@ -55,8 +58,8 @@ export default function SignForm() {
       toast.success('회원가입에 성공했습니다.', {
         position: toast.POSITION.TOP_RIGHT,
       })
-      setSignType('login')
       setError('')
+      router.push('/')
     } catch (error) {
       toast.error(error.code, {
         position: toast.POSITION.TOP_RIGHT,
