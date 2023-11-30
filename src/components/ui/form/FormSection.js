@@ -2,7 +2,7 @@ export default function FormSection({ children, title }) {
   return (
     <>
       <div className='section'>
-        <div className='section-title'>{title}</div>
+        {title && <div className='section-title'>{title}</div>}
         {children}
       </div>
       <style jsx>{`
