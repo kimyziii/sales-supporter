@@ -3,7 +3,6 @@ import SideBar from './Sidebar'
 import SignPage from '@/pages/sign'
 import { app } from '../../../firebaseApp'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import Loader from './Loader'
 
 export default function Layout({ children }) {
   const auth = getAuth(app)
@@ -34,7 +33,6 @@ export default function Layout({ children }) {
           </>
         )}
         {!isAuthenticated && init && <SignPage />}
-        {/* {!isAuthenticated && !init && <Loader />} */}
       </div>
 
       <style jsx>
