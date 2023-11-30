@@ -1,20 +1,43 @@
-import { useState } from 'react'
-import SignUpForm from '../signup'
+import { useEffect, useState } from 'react'
 import SideBar from './Sidebar'
+import SignPage from '@/pages/sign'
+import { app } from '../../../firebaseApp'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import Loader from './Loader'
 
 export default function Layout({ children }) {
+  const auth = getAuth(app)
+
+  // auth에 currentUser 있을 경우 true
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // loading-spinner 기준
+  const [init, setInit] = useState(false)
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true)
+      } else {
+        setIsAuthenticated(false)
+      }
+      setInit(true)
+    })
+  }, [auth])
 
   return (
     <>
       <div className='layout'>
-        {isAuthenticated && (
+        {isAuthenticated && init && (
           <>
             <SideBar />
             <main className='main'>{children}</main>
           </>
         )}
-        {!isAuthenticated && <SignUpForm />}
+        {!isAuthenticated && init && (
+          <SignPage isAuthenticated={isAuthenticated} />
+        )}
+        {!isAuthenticated && !init && <Loader />}
       </div>
 
       <style jsx>
