@@ -265,6 +265,7 @@ export default function LeadList() {
           onCancel={handleCancel}
           width='30%'
           top='25%'
+          msg='해당 리드를 삭제하시겠습니까?'
         />
       )}
 

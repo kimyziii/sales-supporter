@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
+import { formatCurrentTime } from '../lead/LeadList'
 import ConfirmModal from '../ui/ConfirmModal'
 import CreateButton from '../ui/CreateButton'
 import FilterBar from '../ui/FilterBar'
@@ -65,9 +66,9 @@ export default function AccList() {
     const docSnap = await getDocs(q)
 
     docSnap.forEach((doc) => {
-      const bizr_no = doc.data().bizr_no
-      const jurir_no = doc.data().jurir_no
-      const est_dt = doc.data().est_dt
+      const bizr_no = doc.data()?.bizr_no
+      const jurir_no = doc.data()?.jurir_no
+      const est_dt = doc.data()?.est_dt
 
       const dataObj = {
         ...doc.data(),
@@ -76,8 +77,6 @@ export default function AccList() {
         jurir_no: jurir_no ? splitFunc(jurir_no, 'jurir_no') : '',
         est_dt: est_dt ? splitFunc(est_dt, 'est_dt') : '',
       }
-
-      console.log(dataObj)
 
       setData((prevData) => [...prevData, dataObj])
     })
@@ -130,8 +129,8 @@ export default function AccList() {
       const dataObj = {
         ...doc.data(),
         id: doc.id,
-        bizr_no: splitFunc(doc.data().bizr_no, 'bizr_no'),
-        jurir_no: splitFunc(doc.data().jurir_no, 'jurir_no'),
+        bizr_no: splitFunc(doc.data()?.bizr_no, 'bizr_no'),
+        jurir_no: splitFunc(doc.data()?.jurir_no, 'jurir_no'),
       }
 
       setData((prevData) => [...prevData, dataObj])
@@ -195,8 +194,12 @@ export default function AccList() {
       const dataObj = {
         ...doc.data(),
         id: doc.id,
-        bizr_no: splitFunc(doc.data().bizr_no, 'bizr_no'),
-        jurir_no: splitFunc(doc.data().jurir_no, 'jurir_no'),
+        bizr_no: doc.data()?.bizr_no
+          ? splitFunc(doc.data().bizr_no, 'bizr_no')
+          : '',
+        jurir_no: doc.data()?.jurir_no
+          ? splitFunc(doc.data().jurir_no, 'jurir_no')
+          : '',
       }
 
       setData((prevData) => [...prevData, dataObj])
@@ -229,6 +232,7 @@ export default function AccList() {
           onCancel={handleCancel}
           width='30%'
           top='25%'
+          msg='해당 계정을 삭제하시겠습니까?'
         />
       )}
 

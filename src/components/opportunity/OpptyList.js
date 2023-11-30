@@ -205,6 +205,7 @@ export default function OpptyList() {
           onCancel={handleCancel}
           width='30%'
           top='25%'
+          msg='해당 영업기회를 삭제하시겠습니까?'
         />
       )}
 

@@ -1,8 +1,8 @@
-const ConfirmModal = ({ action, onDelete, onCancel }) => {
+const ConfirmModal = ({ action, onDelete, onCancel, msg }) => {
   const DeleteModal = () => {
     return (
       <div className='modal-delete'>
-        <div>해당 리드를 삭제하시겠습니까?</div>
+        <div>{msg}</div>
 
         <style jsx>{`
           .modal-delete {
@@ -68,7 +68,7 @@ const ConfirmModal = ({ action, onDelete, onCancel }) => {
         .modal {
           position: absolute;
           overflow-y: auto;
-          min-height: 15%;
+          min-height: fit-content;
           max-height: 83%;
           background: white;
           border-radius: var(--border-radius);
