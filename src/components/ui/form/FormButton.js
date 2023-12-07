@@ -25,6 +25,11 @@ export default function FormButton({ onClick, value, type, disabled = false }) {
           background: var(--button-gray-color: #f0f0f0;);
         }
 
+        .delete {
+          background: var(--button-delete-color);
+          color: white;
+        }
+
         .disabled {
           background: var(--button-gray-color: #f0f0f0;);
         }

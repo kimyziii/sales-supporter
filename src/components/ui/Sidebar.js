@@ -3,6 +3,8 @@ import { getAuth, signOut } from 'firebase/auth'
 import Navigation from './Navigation'
 import { app } from '../../../firebaseApp'
 import { toast } from 'react-toastify'
+import { useContext } from 'react'
+import AuthContext from '@/context/AuthContext'
 
 export default function SideBar() {
   const router = useRouter()
@@ -21,6 +23,12 @@ export default function SideBar() {
     router.push('/')
   }
 
+  function handleNavigateToProfile() {
+    router.push('/profile')
+  }
+
+  const { user } = useContext(AuthContext)
+
   return (
     <>
       <div className='side-bar'>
@@ -31,9 +39,13 @@ export default function SideBar() {
           </div>
 
           {/* 프로필 */}
-          <div className='profile'>
+          <div
+            className='profile'
+            onClick={handleNavigateToProfile}
+            role='presentation'
+          >
             <img src='icons/user.svg' />
-            <span>kim.yz</span>
+            <span>{user.email}</span>
           </div>
 
           {/* 네비게이션 */}
@@ -66,7 +78,7 @@ export default function SideBar() {
           padding: 20px 0;
           justify-content: space-between;
           background-color: var(--secondary-color);
-          height: 100%;
+          overflow-y: auto;
 
           min-height: 90vh;
           max-height: 90vh;
@@ -85,8 +97,9 @@ export default function SideBar() {
           gap: 10px;
           align-items: center;
 
-          font-family: 'NeoDunggeunmoPro-Regular';
-          font-size: 14px;
+          font-family: 'GyeonggiTitleM';
+          font-size: 12px;
+          cursor: pointer;
         }
 
         .profile img {
@@ -106,7 +119,7 @@ export default function SideBar() {
           margin: 0 15px;
           padding: 10px 0;
 
-          font-family: 'NeoDunggeunmoPro-Regular';
+          font-family: 'GyeonggiTitleM';
           font-size: 14px;
           cursor: pointer;
         }
