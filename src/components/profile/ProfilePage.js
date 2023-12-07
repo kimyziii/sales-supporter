@@ -1,6 +1,13 @@
 import AuthContext from '@/context/AuthContext'
 import { deleteUser } from 'firebase/auth'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
 import FormButton from '..//ui/form/FormButton'
@@ -10,11 +17,31 @@ import { toast } from 'react-toastify'
 export default function ProfilePage() {
   const currentUser = useContext(AuthContext).user
   const userId = useContext(AuthContext).user.uid
+
   const [user, setUser] = useState(null)
+  const [nickname, setNickname] = useState('')
   const [deleteModal, setDeleteModal] = useState(false)
+  const [nicknameEditMode, setNicknameEditMode] = useState(false)
 
   function onDelete() {
     setDeleteModal(true)
+  }
+
+  function handleEditNickname() {
+    setNicknameEditMode(!nicknameEditMode)
+  }
+
+  function handleChangeNickname(event) {
+    setNickname(event.target.value)
+  }
+
+  async function handleSaveNickname() {
+    await updateDoc(doc(db, 'user', user.id), {
+      nickName: nickname,
+    }).then(() => {
+      getUserData()
+      setNicknameEditMode(false)
+    })
   }
 
   async function handleDelete() {
@@ -37,7 +64,8 @@ export default function ProfilePage() {
     const q = query(userRef, where('uid', '==', userId))
     const querySnapshot = await getDocs(q)
     querySnapshot.forEach((doc) => {
-      setUser(doc.data())
+      setUser({ ...doc.data(), id: doc.id })
+      setNickname(doc.data()?.nickName)
     })
   }
 
@@ -64,11 +92,31 @@ export default function ProfilePage() {
           </div>
           <div className='profile-page__name'>
             <div className='profile-page__name--nn'>
-              <div>{user?.nickName}</div>
-              <img src='icons/edit.svg' />
+              {!nicknameEditMode && (
+                <>
+                  <div>{nickname}</div>
+                  <img src='icons/edit.svg' onClick={handleEditNickname} />
+                </>
+              )}
+              {nicknameEditMode && (
+                <>
+                  <input
+                    className='profile-page__nickname--edit'
+                    value={nickname}
+                    onChange={handleChangeNickname}
+                  ></input>
+                  <FormButton
+                    onClick={handleSaveNickname}
+                    value='저장'
+                    type='confirm'
+                  />
+                </>
+              )}
             </div>
-            <div className='profile-page__name--email'>{user?.email}</div>
           </div>
+          <i>
+            <div className='profile-page__name--email'>{user?.email}</div>
+          </i>
         </div>
       </div>
       <div className='profile-page__btn'>
@@ -108,6 +156,7 @@ export default function ProfilePage() {
           flex-direction: column;
           justify-content: start;
           gap: 10px;
+          padding-left: 5px;
         }
 
         .profile-page__photo {
@@ -138,17 +187,32 @@ export default function ProfilePage() {
           gap: 10px;
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
           align-items: start;
+          margin-left: -5px;
+          padding: 6px 12px;
+          border-bottom: 1px solid gray;
         }
 
         .profile-page__name--nn {
           display: flex;
-          gap: 15px;
+          justify-content: space-between;
+          align-items: center;
+          gap: 25px;
           font-size: 15px;
         }
 
         .profile-page__name--nn img {
           width: 15px;
+        }
+
+        .profile-page__nickname--edit {
+          border: none;
+          background: var(--button-gray-color);
+          border-radius: var(--border-radius);
+
+          padding: 6px 12px;
+          font-family: 'SUIT-400';
         }
 
         .profile-page__name--email {
