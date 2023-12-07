@@ -38,6 +38,7 @@ export default function AccForm({ onUpsert, selectedItem, onCancel }) {
                 type='text'
                 onChange={handleChange}
                 name='name'
+                required
               />
               <FormField
                 label='Corperation Name'

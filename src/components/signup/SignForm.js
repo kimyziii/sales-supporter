@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { app } from '../../../firebaseApp'
+import db, { app } from '../../../firebaseApp'
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -14,12 +14,16 @@ import FormField from '../ui/form/FormField'
 import FormRow from '../ui/form/FormRow'
 import FormSection from '../ui/form/FormSection'
 import { useRouter } from 'next/router'
+import { formatCurrentTime } from '../lead/LeadList'
+import { addDoc, collection } from 'firebase/firestore'
 
 export default function SignForm() {
   const router = useRouter()
 
   const [error, setError] = useState('')
 
+  const [companyName, setCompanyName] = useState('')
+  const [teamName, setTeamName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -54,12 +58,33 @@ export default function SignForm() {
     event.preventDefault()
     try {
       const auth = getAuth(app)
-      await createUserWithEmailAndPassword(auth, email, password)
-      toast.success('회원가입에 성공했습니다.', {
-        position: toast.POSITION.TOP_RIGHT,
-      })
-      setError('')
-      router.push('/')
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      )
+      if (credential) {
+        const userData = {}
+        const userRef = collection(db, 'user')
+
+        userData.createdAt = formatCurrentTime()
+        userData.lastLoginAt = formatCurrentTime()
+        userData.companyName = companyName
+        userData.teamName = teamName
+        userData.email = credential.user.email
+        userData.nickName = credential.user.email
+        userData.uid = credential.user.uid
+
+        const docRef = await addDoc(userRef, userData)
+
+        if (docRef.id) {
+          toast.success('회원가입에 성공했습니다.', {
+            position: toast.POSITION.TOP_RIGHT,
+          })
+          setError('')
+          router.push('/')
+        }
+      }
     } catch (error) {
       toast.error(error.code, {
         position: toast.POSITION.TOP_RIGHT,
@@ -97,6 +122,14 @@ export default function SignForm() {
     const {
       target: { name, value },
     } = event
+
+    if (name === 'companyName') {
+      setCompanyName(value)
+    }
+
+    if (name === 'teamName') {
+      setTeamName(value)
+    }
 
     if (name === 'email') {
       setEmail(value)
@@ -145,12 +178,37 @@ export default function SignForm() {
         />
       </div>
 
+      {/* 회원가입 폼 */}
       {signType === 'signup' && (
         <>
           <h3 style={{ fontFamily: 'SUIT-600' }}>회원가입</h3>
           <hr style={{ border: '1px dashed lightgray', width: '500px' }} />
           <form className='signup-form' onSubmit={onSubmit}>
             <div style={{ marginBottom: '15px' }}>
+              <FormRow>
+                <FormField
+                  label='회사명'
+                  type='text'
+                  name='companyName'
+                  id='companyName'
+                  onChange={onSignupChange}
+                  column='1'
+                  value={companyName}
+                  required
+                />
+              </FormRow>
+              <FormRow>
+                <FormField
+                  label='부서명'
+                  type='text'
+                  name='teamName'
+                  id='teamName'
+                  onChange={onSignupChange}
+                  column='1'
+                  value={teamName}
+                  required
+                />
+              </FormRow>
               <FormRow>
                 <FormField
                   label='이메일'
@@ -210,6 +268,7 @@ export default function SignForm() {
         </>
       )}
 
+      {/* 로그인 폼 */}
       {signType === 'login' && (
         <>
           <h3 style={{ fontFamily: 'SUIT-600' }}>로그인</h3>
