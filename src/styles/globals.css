@@ -21,6 +21,7 @@
   --button-gray-color: #f0f0f0;
   --button-gray-border-color: #e5e5e5;
   --button-point-color: rgba(64, 217, 255, 0.8);
+  --button-delete-color: rgb(239, 79, 79);
 }
 
 * {
@@ -66,10 +67,11 @@ li {
 }
 
 @font-face {
-  font-family: 'NeoDunggeunmoPro-Regular';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/NeoDunggeunmoPro-Regular.woff2')
+  font-family: 'pixel';
+  /* font-family: 'Cafe24Supermagic-Bold-v1.0'; */
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2')
     format('woff2');
-  font-weight: normal;
+  font-weight: 700;
   font-style: normal;
 }
 
