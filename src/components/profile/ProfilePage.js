@@ -1,24 +1,18 @@
 import AuthContext from '@/context/AuthContext'
-import { deleteUser } from 'firebase/auth'
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  updateDoc,
-} from 'firebase/firestore'
-import { useContext, useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
+
+import FromButtonGroup from '..//ui/form/FormButtonGroup'
 import FormButton from '..//ui/form/FormButton'
 import ConfirmModal from '../ui/ConfirmModal'
+
+import { deleteUser } from 'firebase/auth'
+import { doc, updateDoc } from 'firebase/firestore'
+import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 export default function ProfilePage() {
-  const currentUser = useContext(AuthContext).user
-  const userId = useContext(AuthContext).user.uid
+  const { authUser, user, updateValue } = useContext(AuthContext)
 
-  const [user, setUser] = useState(null)
   const [nickname, setNickname] = useState('')
   const [deleteModal, setDeleteModal] = useState(false)
   const [nicknameEditMode, setNicknameEditMode] = useState(false)
@@ -35,17 +29,22 @@ export default function ProfilePage() {
     setNickname(event.target.value)
   }
 
+  function handleCancel() {
+    setNicknameEditMode(false)
+  }
+
   async function handleSaveNickname() {
     await updateDoc(doc(db, 'user', user.id), {
       nickName: nickname,
     }).then(() => {
-      getUserData()
+      setNickname(nickname)
       setNicknameEditMode(false)
     })
+    updateValue({ ...user, nickName: nickname })
   }
 
   async function handleDelete() {
-    deleteUser(currentUser)
+    deleteUser(authUser)
       .then(() => {
         toast.success('회원 탈퇴에 성공했습니다.', {
           position: toast.POSITION.TOP_RIGHT,
@@ -60,18 +59,12 @@ export default function ProfilePage() {
   }
 
   async function getUserData() {
-    const userRef = collection(db, 'user')
-    const q = query(userRef, where('uid', '==', userId))
-    const querySnapshot = await getDocs(q)
-    querySnapshot.forEach((doc) => {
-      setUser({ ...doc.data(), id: doc.id })
-      setNickname(doc.data()?.nickName)
-    })
+    setNickname(user?.nickName)
   }
 
   useEffect(() => {
     getUserData()
-  }, [userId])
+  }, [user])
 
   return (
     <div className='profile-wrapper'>
@@ -105,11 +98,18 @@ export default function ProfilePage() {
                     value={nickname}
                     onChange={handleChangeNickname}
                   ></input>
-                  <FormButton
-                    onClick={handleSaveNickname}
-                    value='저장'
-                    type='confirm'
-                  />
+                  <FromButtonGroup>
+                    <FormButton
+                      onClick={handleSaveNickname}
+                      value='저장'
+                      type='confirm'
+                    />
+                    <FormButton
+                      onClick={handleCancel}
+                      value='취소'
+                      type='cancel'
+                    />
+                  </FromButtonGroup>
                 </>
               )}
             </div>
@@ -195,6 +195,7 @@ export default function ProfilePage() {
         }
 
         .profile-page__name--nn {
+          width: 100%;
           display: flex;
           justify-content: space-between;
           align-items: center;

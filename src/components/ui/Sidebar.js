@@ -3,7 +3,7 @@ import { getAuth, signOut } from 'firebase/auth'
 import Navigation from './Navigation'
 import { app } from '../../../firebaseApp'
 import { toast } from 'react-toastify'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import AuthContext from '@/context/AuthContext'
 
 export default function SideBar() {
@@ -28,6 +28,7 @@ export default function SideBar() {
   }
 
   const { user } = useContext(AuthContext)
+  useEffect(() => {}, [user])
 
   return (
     <>
@@ -45,7 +46,7 @@ export default function SideBar() {
             role='presentation'
           >
             <img src='icons/user.svg' />
-            <span>{user.email}</span>
+            <span style={{ fontSize: '15px' }}>{user?.nickName}</span>
           </div>
 
           {/* 네비게이션 */}
