@@ -5,7 +5,7 @@ export default function FormField({
   onChange,
   name,
   required,
-  column = 2,
+  column = '2',
 }) {
   return (
     <>
