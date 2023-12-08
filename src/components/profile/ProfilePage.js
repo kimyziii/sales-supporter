@@ -176,6 +176,7 @@ export default function ProfilePage() {
         }
 
         .profile-page__company--cn {
+          font-family: 'SUIT-600';
           font-size: 18px;
         }
 
