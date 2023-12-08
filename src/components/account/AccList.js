@@ -1,3 +1,4 @@
+import AuthContext from '@/context/AuthContext'
 import {
   addDoc,
   collection,
@@ -8,9 +9,9 @@ import {
   query,
   updateDoc,
 } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
-import { formatCurrentTime } from '../lead/LeadList'
+import { formatCurrentTime, getUserName } from '../lead/LeadList'
 import ConfirmModal from '../ui/ConfirmModal'
 import CreateButton from '../ui/CreateButton'
 import FilterBar from '../ui/FilterBar'
@@ -19,6 +20,8 @@ import AccFormModal from './AccFormModal'
 import AccRecordCard from './AccRecordCard'
 
 export default function AccList() {
+  const { user } = useContext(AuthContext)
+
   const [data, setData] = useState([])
 
   // firestore 데이터 관련 문서 ID 상태
@@ -86,10 +89,25 @@ export default function AccList() {
    * 선택 된 계정 스타일링 및 상세 페이지 컴포넌트 열기
    * @param {*} event record-card 클릭 이벤트
    */
-  function handleRecordClick(event) {
+  async function handleRecordClick(event) {
     const name = event.target.getAttribute('name')
     const selectedItem = data.find((item) => item.id === name)
-    selectedItem && setSelectedObj(selectedItem)
+
+    if (selectedItem) {
+      const uids = {}
+      if (selectedItem?.createdById) uids.createdById = selectedItem.createdById
+      if (selectedItem?.modifiedById)
+        uids.modifiedById = selectedItem.modifiedById
+
+      let names
+      if (Object.values(uids).length !== 0) names = await getUserName(uids)
+      setSelectedObj({
+        ...selectedItem,
+        createdBy: names?.createdBy,
+        modifiedBy: names?.modifiedBy,
+      })
+    }
+
     setDetailOpen(true)
   }
 
@@ -164,16 +182,16 @@ export default function AccList() {
 
     if (selectedAction === 'update') {
       const accountRef = doc(db, 'account', recordId)
-      upsertData.modifiedBy = 'username'
+      upsertData.modifiedById = user.uid
       upsertData.modifiedAt = formatCurrentTime()
       await updateDoc(accountRef, upsertData)
     }
 
     if (selectedAction === 'create') {
       const accountRef = collection(db, 'account')
-      upsertData.createdBy = 'username'
+      upsertData.createdById = user.uid
       upsertData.createdAt = formatCurrentTime()
-      upsertData.modifiedBy = 'username'
+      upsertData.modifiedById = user.uid
       upsertData.modifiedAt = formatCurrentTime()
       const docRef = await addDoc(accountRef, upsertData)
       recordId = docRef.id
@@ -187,10 +205,10 @@ export default function AccList() {
     const sorting = sortingFilter === 'name' ? 'asc' : 'desc'
 
     const accountRef = collection(db, 'account')
-    const q = await query(accountRef, orderBy(sortingFilter, sorting))
+    const q = query(accountRef, orderBy(sortingFilter, sorting))
     const docSnap = await getDocs(q)
 
-    docSnap.forEach((doc) => {
+    docSnap.forEach(async (doc) => {
       const dataObj = {
         ...doc.data(),
         id: doc.id,
@@ -203,7 +221,21 @@ export default function AccList() {
       }
 
       setData((prevData) => [...prevData, dataObj])
-      if (doc.id === recordId) setSelectedObj(dataObj)
+
+      // upsert 대상 데이터에 대해 생성자, 수정자 이름 업데이트
+      if (doc.id === recordId) {
+        const uids = {}
+        if (doc.data()?.createdById) uids.createdById = doc.data().createdById
+        if (doc.data()?.modifiedById)
+          uids.modifiedById = doc.data().modifiedById
+
+        const names = await getUserName(uids)
+        setSelectedObj({
+          ...dataObj,
+          createdBy: names.createdBy,
+          modifiedBy: names.modifiedBy,
+        })
+      }
     })
 
     setDetailOpen(true)
