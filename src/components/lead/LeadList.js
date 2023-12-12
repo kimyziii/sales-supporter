@@ -19,6 +19,8 @@ import LeadDetailPage from './LeadDetail'
 import LeadFormModal from './LeadFormModal'
 import LeadRecordCard from './LeadRecordCard'
 
+const DEFAULT_SORTING = 'createdAt'
+
 /**
  * 한국 전화번호에 맞게 전화번호 포맷
  * @param {string} phoneNumber (ex. 01012345678)
@@ -110,7 +112,7 @@ export default function LeadList() {
   const [recordId, setRecordId] = useState('')
 
   // 상세 페이지 관련 상태
-  const [selectedObj, setSelectedObj] = useState({})
+  const [selectedObj, setSelectedObj] = useState(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
   // 모달 관련 상태
@@ -129,27 +131,53 @@ export default function LeadList() {
     { name: 'companyName', korName: '회사명' },
   ]
 
-  /**
-   * 모든 리드를 생성일자 역순으로 조회
-   */
-  async function getLeads() {
-    setData([])
+  const filters = [
+    { name: 'my', korName: '내 리드' },
+    { name: 'team', korName: '팀 리드' },
+    { name: 'all', korName: '모든 리드' },
+  ]
 
+  /**
+   * 모든 리드를 특정 정렬필드를 받아 정렬
+   * @param {*} filter 정렬하고자 하는 필드명
+   */
+  async function getLeads(filter, recordId = '') {
+    setSelectedObj(null)
+
+    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
     const leadsRef = collection(db, 'lead')
-    const q = await query(leadsRef, orderBy('createdAt', 'desc'))
+    const q = query(leadsRef, orderBy(filter, sortingFilter))
     const docSnap = await getDocs(q)
+
+    let datas = []
+    const promises = []
 
     docSnap.forEach((doc) => {
       const phone = doc.data().phone ? doc.data().phone : ''
 
-      const dataObj = {
+      let dataObj = {
         ...doc.data(),
         id: doc.id,
         phone: formatPhone(phone),
       }
 
-      setData((prevData) => [...prevData, dataObj])
+      if (recordId && recordId === doc.id) {
+        const promise = getUserName(doc.data()).then((names) => {
+          dataObj = {
+            ...dataObj,
+            createdBy: names?.createdBy,
+            modifiedBy: names?.modifiedBy,
+          }
+          setSelectedObj(dataObj)
+        })
+        promises.push(promise)
+      }
+
+      datas.push(dataObj)
     })
+
+    await Promise.all(promises)
+    setData(datas)
   }
 
   /**
@@ -191,30 +219,8 @@ export default function LeadList() {
    * @param {*} event 정렬 버튼 클릭 이벤트
    */
   async function handleSorting(event) {
-    const sorting =
-      event.target.getAttribute('name') === 'companyName' ? 'asc' : 'desc'
     setSortingFilter(event.target.getAttribute('name'))
-
-    setData([])
-
-    const leadsRef = collection(db, 'lead')
-    const q = await query(
-      leadsRef,
-      orderBy(event.target.getAttribute('name'), sorting),
-    )
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach((doc) => {
-      const phone = doc.data().phone ? doc.data().phone : ''
-
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-        phone: formatPhone(phone),
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-    })
+    getLeads(event.target.getAttribute('name'))
 
     setSortingPopupIsOpen(false)
     setSelectedObj({})
@@ -226,12 +232,12 @@ export default function LeadList() {
    */
   async function handleDelete() {
     await deleteDoc(doc(db, 'lead', recordId))
-    setDetailOpen(false)
     setSelectedObj(null)
-
-    setData(data.filter((rec) => rec.id !== recordId))
+    setDetailOpen(false)
     setRecordId('')
+
     setDeleteModalOpen(false)
+    getLeads(sortingFilter)
   }
 
   /**
@@ -259,43 +265,10 @@ export default function LeadList() {
       recordId = docRef.id
     }
 
+    setRecordId(recordId)
+    getLeads(sortingFilter, recordId)
+
     setUpsertModalOpen(false)
-
-    // 전체 데이터 불러온 후 업데이트 된 친구 디테일 화면에 보여줌
-    setData([])
-
-    const sorting = sortingFilter === 'companyName' ? 'asc' : 'desc'
-
-    const leadsRef = collection(db, 'lead')
-    const q = await query(leadsRef, orderBy(sortingFilter, sorting))
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach(async (doc) => {
-      const phone = doc.data().phone ? doc.data().phone : ''
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-        phone: formatPhone(phone),
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-
-      // upsert 대상 데이터에 대해 생성자, 수정자 이름 업데이트
-      if (doc.id === recordId) {
-        const uids = {}
-        if (doc.data()?.createdById) uids.createdById = doc.data().createdById
-        if (doc.data()?.modifiedById)
-          uids.modifiedById = doc.data().modifiedById
-
-        const names = await getUserName(doc.data())
-        setSelectedObj({
-          ...dataObj,
-          createdBy: names?.createdBy,
-          modifiedBy: names?.modifiedBy,
-        })
-      }
-    })
-
     setDetailOpen(true)
   }
 
@@ -309,7 +282,7 @@ export default function LeadList() {
   }
 
   useEffect(() => {
-    getLeads()
+    getLeads(DEFAULT_SORTING)
   }, [])
 
   return (
@@ -336,6 +309,7 @@ export default function LeadList() {
       )}
 
       <div className='list-view'>
+        {/* 생성 버튼 */}
         <CreateButton onClick={() => handleOpenModal('create')} object='Lead' />
 
         {/* 검색 및 정렬 */}
@@ -348,6 +322,7 @@ export default function LeadList() {
             setSortingPopupIsOpen((prevState) => !prevState)
           }
           sortings={sortings}
+          filters={filters}
         />
 
         <LeadRecordCard
@@ -360,9 +335,12 @@ export default function LeadList() {
           data={data}
         />
       </div>
+
+      {/* 상세화면 */}
       <div className='detail-view'>
         {detailOpen && <LeadDetailPage selectedObj={selectedObj} />}
       </div>
+
       <style jsx>{`
         .lead-view {
           display: grid;
