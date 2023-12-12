@@ -74,13 +74,7 @@ export default function OpptyList() {
     const selectedItem = data.find((item) => item.id === name)
 
     if (selectedItem) {
-      const uids = {}
-      if (selectedItem?.createdById) uids.createdById = selectedItem.createdById
-      if (selectedItem?.modifiedById)
-        uids.modifiedById = selectedItem.modifiedById
-
-      let names
-      if (Object.values(uids).length !== 0) names = await getUserName(uids)
+      const names = await getUserName(selectedItem)
       setSelectedObj({
         ...selectedItem,
         createdBy: names?.createdBy,
@@ -196,16 +190,11 @@ export default function OpptyList() {
 
       // upsert 대상 데이터에 대해 생성자, 수정자 이름 업데이트
       if (doc.id === recordId) {
-        const uids = {}
-        if (doc.data()?.createdById) uids.createdById = doc.data().createdById
-        if (doc.data()?.modifiedById)
-          uids.modifiedById = doc.data().modifiedById
-
-        const names = await getUserName(uids)
+        const names = await getUserName(doc.data())
         setSelectedObj({
           ...dataObj,
-          createdBy: names.createdBy,
-          modifiedBy: names.modifiedBy,
+          createdBy: names?.createdBy,
+          modifiedBy: names?.modifiedBy,
         })
       }
     })

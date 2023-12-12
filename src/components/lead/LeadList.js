@@ -75,21 +75,28 @@ export function formatCurrentTime() {
  * 생성자, 수정자 이름 실시간으로 불러와 보여줌
  * @param {*} uid user id
  */
-export async function getUserName(uids) {
-  const q = query(
-    collection(db, 'user'),
-    where('uid', 'in', Object.values(uids)),
-  )
-  const querySnapshot = await getDocs(q)
-
-  const map = new Map()
-  querySnapshot.forEach((doc) => {
-    map.set(doc.data().uid, doc.data().nickName)
-  })
+export async function getUserName(data) {
+  const uids = {}
+  if (data?.createdById) uids.createdById = data.createdById
+  if (data?.modifiedById) uids.modifiedById = data.modifiedById
 
   let retObj = {}
-  if (map.has(uids.createdById)) retObj.createdBy = map.get(uids.createdById)
-  if (map.has(uids.modifiedById)) retObj.modifiedBy = map.get(uids.modifiedById)
+  if (Object.values(uids).length > 0) {
+    const q = query(
+      collection(db, 'user'),
+      where('uid', 'in', Object.values(uids)),
+    )
+    const querySnapshot = await getDocs(q)
+
+    const map = new Map()
+    querySnapshot.forEach((doc) => {
+      map.set(doc.data().uid, doc.data().nickName)
+    })
+
+    if (map.has(uids.createdById)) retObj.createdBy = map.get(uids.createdById)
+    if (map.has(uids.modifiedById))
+      retObj.modifiedBy = map.get(uids.modifiedById)
+  }
 
   return retObj
 }
@@ -154,13 +161,7 @@ export default function LeadList() {
     const selectedItem = data.find((item) => item.id === name)
 
     if (selectedItem) {
-      const uids = {}
-      if (selectedItem?.createdById) uids.createdById = selectedItem.createdById
-      if (selectedItem?.modifiedById)
-        uids.modifiedById = selectedItem.modifiedById
-
-      let names
-      if (Object.values(uids).length !== 0) names = await getUserName(uids)
+      const names = await getUserName(selectedItem)
       setSelectedObj({
         ...selectedItem,
         createdBy: names?.createdBy,
@@ -286,11 +287,11 @@ export default function LeadList() {
         if (doc.data()?.modifiedById)
           uids.modifiedById = doc.data().modifiedById
 
-        const names = await getUserName(uids)
+        const names = await getUserName(doc.data())
         setSelectedObj({
           ...dataObj,
-          createdBy: names.createdBy,
-          modifiedBy: names.modifiedBy,
+          createdBy: names?.createdBy,
+          modifiedBy: names?.modifiedBy,
         })
       }
     })

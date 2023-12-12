@@ -99,8 +99,7 @@ export default function AccList() {
       if (selectedItem?.modifiedById)
         uids.modifiedById = selectedItem.modifiedById
 
-      let names
-      if (Object.values(uids).length !== 0) names = await getUserName(uids)
+      const names = await getUserName(selectedItem)
       setSelectedObj({
         ...selectedItem,
         createdBy: names?.createdBy,
@@ -229,11 +228,11 @@ export default function AccList() {
         if (doc.data()?.modifiedById)
           uids.modifiedById = doc.data().modifiedById
 
-        const names = await getUserName(uids)
+        const names = await getUserName(doc.data())
         setSelectedObj({
           ...dataObj,
-          createdBy: names.createdBy,
-          modifiedBy: names.modifiedBy,
+          createdBy: names?.createdBy,
+          modifiedBy: names?.modifiedBy,
         })
       }
     })
