@@ -19,6 +19,8 @@ import AccDetailPage from './AccDetail'
 import AccFormModal from './AccFormModal'
 import AccRecordCard from './AccRecordCard'
 
+const DEFAULT_SORTING = 'createdAt'
+
 export default function AccList() {
   const { user } = useContext(AuthContext)
 
@@ -28,7 +30,7 @@ export default function AccList() {
   const [recordId, setRecordId] = useState('')
 
   // 상세 페이지 관련 상태
-  const [selectedObj, setSelectedObj] = useState({})
+  const [selectedObj, setSelectedObj] = useState(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
   // 모달 관련 상태
@@ -47,6 +49,12 @@ export default function AccList() {
     { name: 'name', korName: '회사명' },
   ]
 
+  const filters = [
+    { name: 'my', korName: '내 고객사' },
+    { name: 'team', korName: '팀 고객사' },
+    { name: 'all', korName: '모든 고객사' },
+  ]
+
   function splitFunc(val, type) {
     switch (type) {
       case 'jurir_no':
@@ -59,21 +67,27 @@ export default function AccList() {
   }
 
   /**
-   * 모든 계정을 생성일자 역순으로 조회
+   * 모든 리드를 특정 정렬필드를 받아 정렬
+   * @param {*} filter 정렬하고자 하는 필드명
    */
-  async function getAccounts() {
-    setData([])
+  async function getAccounts(filter, recordId = '') {
+    // setData([])
+    setSelectedObj(null)
 
+    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
     const accountRef = collection(db, 'account')
-    const q = query(accountRef, orderBy('createdAt', 'desc'))
+    const q = query(accountRef, orderBy(filter, sortingFilter))
     const docSnap = await getDocs(q)
+
+    let datas = []
+    const promises = []
 
     docSnap.forEach((doc) => {
       const bizr_no = doc.data()?.bizr_no
       const jurir_no = doc.data()?.jurir_no
       const est_dt = doc.data()?.est_dt
 
-      const dataObj = {
+      let dataObj = {
         ...doc.data(),
         id: doc.id,
         bizr_no: bizr_no ? splitFunc(bizr_no, 'bizr_no') : '',
@@ -81,8 +95,23 @@ export default function AccList() {
         est_dt: est_dt ? splitFunc(est_dt, 'est_dt') : '',
       }
 
-      setData((prevData) => [...prevData, dataObj])
+      if (recordId && recordId === doc.id) {
+        const promise = getUserName(doc.data()).then((names) => {
+          dataObj = {
+            ...dataObj,
+            createdBy: names?.createdBy,
+            modifiedBy: names?.modifiedBy,
+          }
+          setSelectedObj(dataObj)
+        })
+        promises.push(promise)
+      }
+
+      datas.push(dataObj)
     })
+
+    await Promise.all(promises)
+    setData(datas)
   }
 
   /**
@@ -94,11 +123,6 @@ export default function AccList() {
     const selectedItem = data.find((item) => item.id === name)
 
     if (selectedItem) {
-      const uids = {}
-      if (selectedItem?.createdById) uids.createdById = selectedItem.createdById
-      if (selectedItem?.modifiedById)
-        uids.modifiedById = selectedItem.modifiedById
-
       const names = await getUserName(selectedItem)
       setSelectedObj({
         ...selectedItem,
@@ -129,29 +153,8 @@ export default function AccList() {
    * @param {*} event 정렬 버튼 클릭 이벤트
    */
   async function handleSorting(event) {
-    const sorting =
-      event.target.getAttribute('name') === 'name' ? 'asc' : 'desc'
     setSortingFilter(event.target.getAttribute('name'))
-
-    setData([])
-
-    const accountsRef = collection(db, 'account')
-    const q = await query(
-      accountsRef,
-      orderBy(event.target.getAttribute('name'), sorting),
-    )
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach((doc) => {
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-        bizr_no: splitFunc(doc.data()?.bizr_no, 'bizr_no'),
-        jurir_no: splitFunc(doc.data()?.jurir_no, 'jurir_no'),
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-    })
+    getAccounts(event.target.getAttribute('name'))
 
     setSortingPopupIsOpen(false)
     setSelectedObj({})
@@ -163,12 +166,12 @@ export default function AccList() {
    */
   async function handleDelete() {
     await deleteDoc(doc(db, 'account', recordId))
-    setDetailOpen(false)
     setSelectedObj(null)
-
-    setData(data.filter((rec) => rec.id !== recordId))
+    setDetailOpen(false)
     setRecordId('')
+
     setDeleteModalOpen(false)
+    getAccounts(sortingFilter)
   }
 
   /**
@@ -196,47 +199,10 @@ export default function AccList() {
       recordId = docRef.id
     }
 
+    setRecordId(recordId)
+    getAccounts(sortingFilter, recordId)
+
     setUpsertModalOpen(false)
-
-    // 전체 데이터 불러온 후 업데이트 된 친구 디테일 화면에 보여줌
-    setData([])
-
-    const sorting = sortingFilter === 'name' ? 'asc' : 'desc'
-
-    const accountRef = collection(db, 'account')
-    const q = query(accountRef, orderBy(sortingFilter, sorting))
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach(async (doc) => {
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-        bizr_no: doc.data()?.bizr_no
-          ? splitFunc(doc.data().bizr_no, 'bizr_no')
-          : '',
-        jurir_no: doc.data()?.jurir_no
-          ? splitFunc(doc.data().jurir_no, 'jurir_no')
-          : '',
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-
-      // upsert 대상 데이터에 대해 생성자, 수정자 이름 업데이트
-      if (doc.id === recordId) {
-        const uids = {}
-        if (doc.data()?.createdById) uids.createdById = doc.data().createdById
-        if (doc.data()?.modifiedById)
-          uids.modifiedById = doc.data().modifiedById
-
-        const names = await getUserName(doc.data())
-        setSelectedObj({
-          ...dataObj,
-          createdBy: names?.createdBy,
-          modifiedBy: names?.modifiedBy,
-        })
-      }
-    })
-
     setDetailOpen(true)
   }
 
@@ -250,7 +216,7 @@ export default function AccList() {
   }
 
   useEffect(() => {
-    getAccounts()
+    getAccounts(DEFAULT_SORTING)
   }, [])
 
   return (
@@ -292,6 +258,7 @@ export default function AccList() {
             setSortingPopupIsOpen((prevState) => !prevState)
           }
           sortings={sortings}
+          filters={filters}
         />
 
         <AccRecordCard

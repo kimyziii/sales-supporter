@@ -18,6 +18,8 @@ import OpptyDetailPage from './OpptyDetailPage'
 import OpptyFormModal from './OpptyFormModal'
 import OpptyRecordCard from './OpptyRecordCard'
 
+const DEFAULT_SORTING = 'createdAt'
+
 export default function OpptyList() {
   const { user } = useContext(AuthContext)
   const [data, setData] = useState([])
@@ -26,7 +28,7 @@ export default function OpptyList() {
   const [recordId, setRecordId] = useState('')
 
   // 상세 페이지 관련 상태
-  const [selectedObj, setSelectedObj] = useState({})
+  const [selectedObj, setSelectedObj] = useState(null)
   const [detailOpen, setDetailOpen] = useState(false)
 
   // 모달 관련 상태
@@ -45,24 +47,49 @@ export default function OpptyList() {
     { name: 'name', korName: '기회명' },
   ]
 
+  const filters = [
+    { name: 'my', korName: '내 영업기회' },
+    { name: 'team', korName: '팀 영업기회' },
+    { name: 'all', korName: '모든 영업기회' },
+  ]
+
   /**
    * 모든 영업기회를 생성일자 역순으로 조회
    */
-  async function getOpportunities() {
-    setData([])
+  async function getOpportunities(filter, recordId = '') {
+    setSelectedObj(null)
 
+    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
     const opportunitiesRef = collection(db, 'opportunity')
-    const q = await query(opportunitiesRef, orderBy('createdAt', 'desc'))
+    const q = query(opportunitiesRef, orderBy(filter, sortingFilter))
     const docSnap = await getDocs(q)
 
+    let datas = []
+    const promises = []
+
     docSnap.forEach((doc) => {
-      const dataObj = {
+      let dataObj = {
         ...doc.data(),
         id: doc.id,
       }
 
-      setData((prevData) => [...prevData, dataObj])
+      if (recordId && recordId === doc.id) {
+        const promise = getUserName(doc.data()).then((names) => {
+          dataObj = {
+            ...dataObj,
+            createdBy: names?.createdBy,
+            modifiedBy: names?.modifiedBy,
+          }
+          setSelectedObj(dataObj)
+        })
+        promises.push(promise)
+      }
+
+      datas.push(dataObj)
     })
+
+    await Promise.all(promises)
+    setData(datas)
   }
 
   /**
@@ -104,27 +131,8 @@ export default function OpptyList() {
    * @param {*} event 정렬 버튼 클릭 이벤트
    */
   async function handleSorting(event) {
-    const sorting =
-      event.target.getAttribute('name') === 'name' ? 'asc' : 'desc'
     setSortingFilter(event.target.getAttribute('name'))
-
-    setData([])
-
-    const opptiesRef = collection(db, 'opportunity')
-    const q = await query(
-      opptiesRef,
-      orderBy(event.target.getAttribute('name'), sorting),
-    )
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach((doc) => {
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-    })
+    getLeads(event.target.getAttribute('name'))
 
     setSortingPopupIsOpen(false)
     setSelectedObj({})
@@ -136,12 +144,12 @@ export default function OpptyList() {
    */
   async function handleDelete() {
     await deleteDoc(doc(db, 'opportunity', recordId))
-    setDetailOpen(false)
     setSelectedObj(null)
-
-    setData(data.filter((rec) => rec.id !== recordId))
+    setDetailOpen(false)
     setRecordId('')
+
     setDeleteModalOpen(false)
+    getOpportunities(sortingFilter)
   }
 
   /**
@@ -169,36 +177,10 @@ export default function OpptyList() {
       recordId = docRef.id
     }
 
+    setRecordId(recordId)
+    getOpportunities(sortingFilter, recordId)
+
     setUpsertModalOpen(false)
-
-    // 전체 데이터 불러온 후 업데이트 된 친구 디테일 화면에 보여줌
-    setData([])
-
-    const sorting = sortingFilter === 'name' ? 'asc' : 'desc'
-
-    const opptiesRef = collection(db, 'opportunity')
-    const q = query(opptiesRef, orderBy(sortingFilter, sorting))
-    const docSnap = await getDocs(q)
-
-    docSnap.forEach(async (doc) => {
-      const dataObj = {
-        ...doc.data(),
-        id: doc.id,
-      }
-
-      setData((prevData) => [...prevData, dataObj])
-
-      // upsert 대상 데이터에 대해 생성자, 수정자 이름 업데이트
-      if (doc.id === recordId) {
-        const names = await getUserName(doc.data())
-        setSelectedObj({
-          ...dataObj,
-          createdBy: names?.createdBy,
-          modifiedBy: names?.modifiedBy,
-        })
-      }
-    })
-
     setDetailOpen(true)
   }
 
@@ -212,7 +194,7 @@ export default function OpptyList() {
   }
 
   useEffect(() => {
-    getOpportunities()
+    getOpportunities(DEFAULT_SORTING)
   }, [])
 
   return (
@@ -254,6 +236,7 @@ export default function OpptyList() {
             setSortingPopupIsOpen((prevState) => !prevState)
           }
           sortings={sortings}
+          filters={filters}
         />
 
         <OpptyRecordCard
