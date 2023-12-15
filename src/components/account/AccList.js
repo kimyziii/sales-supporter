@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
@@ -20,6 +21,7 @@ import AccFormModal from './AccFormModal'
 import AccRecordCard from './AccRecordCard'
 
 const DEFAULT_SORTING = 'createdAt'
+const DEFAULT_FILTER = { name: 'my', korName: '내 고객사' }
 
 export default function AccList() {
   const { user } = useContext(AuthContext)
@@ -42,6 +44,9 @@ export default function AccList() {
   const [sortingFilter, setSortingFilter] = useState('createdAt')
   const [sortingPopupIsOpen, setSortingPopupIsOpen] = useState(false)
 
+  // 필터 상태
+  const [filter, setFilter] = useState(DEFAULT_FILTER)
+
   // 정렬 필터 Array
   const sortings = [
     { name: 'createdAt', korName: '생성일자' },
@@ -51,7 +56,6 @@ export default function AccList() {
 
   const filters = [
     { name: 'my', korName: '내 고객사' },
-    { name: 'team', korName: '팀 고객사' },
     { name: 'all', korName: '모든 고객사' },
   ]
 
@@ -70,13 +74,24 @@ export default function AccList() {
    * 모든 리드를 특정 정렬필드를 받아 정렬
    * @param {*} filter 정렬하고자 하는 필드명
    */
-  async function getAccounts(filter, recordId = '') {
-    // setData([])
+  async function getAccounts(sortingFilter, recordId = '', filter) {
     setSelectedObj(null)
 
-    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
+    const sorting = sortingFilter === 'companyName' ? 'asc' : 'desc'
     const accountRef = collection(db, 'account')
-    const q = query(accountRef, orderBy(filter, sortingFilter))
+
+    let q
+
+    if (!filter || filter.name === 'all') {
+      q = query(accountRef, orderBy(sortingFilter, sorting))
+    } else if (filter.name === 'my' && authUser) {
+      q = query(
+        accountRef,
+        where('createdById', '==', authUser?.uid),
+        orderBy(sortingFilter, sorting),
+      )
+    }
+
     const docSnap = await getDocs(q)
 
     let datas = []
@@ -216,8 +231,8 @@ export default function AccList() {
   }
 
   useEffect(() => {
-    getAccounts(DEFAULT_SORTING)
-  }, [])
+    getAccounts(DEFAULT_SORTING, null, filter)
+  }, [filter, authUser])
 
   return (
     <div className='lead-view'>
@@ -251,14 +266,18 @@ export default function AccList() {
         {/* 검색 및 정렬 */}
         <FilterBar
           sortingPopupIsOpen={sortingPopupIsOpen}
-          sortingFilter={sortingFilter}
           handleSorting={handleSorting}
           handleClosePopup={() => setSortingPopupIsOpen(false)}
           handleSortingClick={() =>
             setSortingPopupIsOpen((prevState) => !prevState)
           }
+          handleFiltering={(filter) => {
+            setFilter(filter)
+          }}
           sortings={sortings}
+          sorting={sortingFilter}
           filters={filters}
+          filter={filter}
         />
 
         <AccRecordCard

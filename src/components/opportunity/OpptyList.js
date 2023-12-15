@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import db from '../../../firebaseApp'
@@ -19,6 +20,7 @@ import OpptyFormModal from './OpptyFormModal'
 import OpptyRecordCard from './OpptyRecordCard'
 
 const DEFAULT_SORTING = 'createdAt'
+const DEFAULT_FILTER = { name: 'my', korName: '내 영업기회' }
 
 export default function OpptyList() {
   const { user } = useContext(AuthContext)
@@ -40,6 +42,9 @@ export default function OpptyList() {
   const [sortingFilter, setSortingFilter] = useState('createdAt')
   const [sortingPopupIsOpen, setSortingPopupIsOpen] = useState(false)
 
+  // 필터 상태
+  const [filter, setFilter] = useState(DEFAULT_FILTER)
+
   // 정렬 필터 Array
   const sortings = [
     { name: 'createdAt', korName: '생성일자' },
@@ -56,12 +61,23 @@ export default function OpptyList() {
   /**
    * 모든 영업기회를 생성일자 역순으로 조회
    */
-  async function getOpportunities(filter, recordId = '') {
+  async function getOpportunities(sortingFilter, recordId = '', filter) {
     setSelectedObj(null)
 
-    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
+    const sorting = filter === 'companyName' ? 'asc' : 'desc'
     const opportunitiesRef = collection(db, 'opportunity')
-    const q = query(opportunitiesRef, orderBy(filter, sortingFilter))
+
+    let q
+
+    if (!filter || filter.name === 'all') {
+      q = query(opportunitiesRef, orderBy(sortingFilter, sorting))
+    } else if (filter.name === 'my' && authUser) {
+      q = query(
+        opportunitiesRef,
+        where('createdById', '==', authUser?.uid),
+        orderBy(sortingFilter, sorting),
+      )
+    }
     const docSnap = await getDocs(q)
 
     let datas = []
@@ -178,7 +194,7 @@ export default function OpptyList() {
     }
 
     setRecordId(recordId)
-    getOpportunities(sortingFilter, recordId)
+    getOpportunities(sortingFilter, recordId, filter)
 
     setUpsertModalOpen(false)
     setDetailOpen(true)
@@ -194,8 +210,8 @@ export default function OpptyList() {
   }
 
   useEffect(() => {
-    getOpportunities(DEFAULT_SORTING)
-  }, [])
+    getOpportunities(DEFAULT_SORTING, null, filter)
+  }, [filter, authUser])
 
   return (
     <div className='oppty-view'>
@@ -229,14 +245,17 @@ export default function OpptyList() {
         {/* 검색 및 정렬 */}
         <FilterBar
           sortingPopupIsOpen={sortingPopupIsOpen}
-          sortingFilter={sortingFilter}
           handleSorting={handleSorting}
           handleClosePopup={() => setSortingPopupIsOpen(false)}
           handleSortingClick={() =>
             setSortingPopupIsOpen((prevState) => !prevState)
           }
+          handleFiltering={(filter) => {
+            setFilter(filter)
+          }}
           sortings={sortings}
           filters={filters}
+          filter={filter}
         />
 
         <OpptyRecordCard

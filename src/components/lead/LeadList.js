@@ -20,6 +20,7 @@ import LeadFormModal from './LeadFormModal'
 import LeadRecordCard from './LeadRecordCard'
 
 const DEFAULT_SORTING = 'createdAt'
+const DEFAULT_FILTER = { name: 'my', korName: '내 리드' }
 
 /**
  * 한국 전화번호에 맞게 전화번호 포맷
@@ -124,6 +125,9 @@ export default function LeadList() {
   const [sortingFilter, setSortingFilter] = useState('createdAt')
   const [sortingPopupIsOpen, setSortingPopupIsOpen] = useState(false)
 
+  // 필터 상태
+  const [filter, setFilter] = useState(DEFAULT_FILTER)
+
   // 정렬 필터 Array
   const sortings = [
     { name: 'createdAt', korName: '생성일자' },
@@ -133,20 +137,32 @@ export default function LeadList() {
 
   const filters = [
     { name: 'my', korName: '내 리드' },
-    { name: 'team', korName: '팀 리드' },
     { name: 'all', korName: '모든 리드' },
   ]
 
   /**
    * 모든 리드를 특정 정렬필드를 받아 정렬
-   * @param {*} filter 정렬하고자 하는 필드명
+   * @param {*} fisortingFilterlter 정렬하고자 하는 필드명
+   * @param {*} recordId detail에 보여줄 데이터의 아이디 값
    */
-  async function getLeads(filter, recordId = '') {
+  async function getLeads(sortingFilter, recordId, filter) {
     setSelectedObj(null)
 
-    const sortingFilter = filter === 'companyName' ? 'asc' : 'desc'
+    const sorting = sortingFilter === 'companyName' ? 'asc' : 'desc'
     const leadsRef = collection(db, 'lead')
-    const q = query(leadsRef, orderBy(filter, sortingFilter))
+
+    let q
+
+    if (!filter || filter.name === 'all') {
+      q = query(leadsRef, orderBy(sortingFilter, sorting))
+    } else if (filter.name === 'my' && authUser) {
+      q = query(
+        leadsRef,
+        where('createdById', '==', authUser?.uid),
+        orderBy(sortingFilter, sorting),
+      )
+    }
+
     const docSnap = await getDocs(q)
 
     let datas = []
@@ -220,11 +236,12 @@ export default function LeadList() {
    */
   async function handleSorting(event) {
     setSortingFilter(event.target.getAttribute('name'))
-    getLeads(event.target.getAttribute('name'))
+    getLeads(event.target.getAttribute('name'), recordId, filter)
 
     setSortingPopupIsOpen(false)
     setSelectedObj({})
     setDetailOpen(false)
+    setRecordId(null)
   }
 
   /**
@@ -266,7 +283,7 @@ export default function LeadList() {
     }
 
     setRecordId(recordId)
-    getLeads(sortingFilter, recordId)
+    getLeads(sortingFilter, recordId, filter)
 
     setUpsertModalOpen(false)
     setDetailOpen(true)
@@ -282,8 +299,8 @@ export default function LeadList() {
   }
 
   useEffect(() => {
-    getLeads(DEFAULT_SORTING)
-  }, [])
+    getLeads(DEFAULT_SORTING, null, filter)
+  }, [filter, authUser])
 
   return (
     <div className='lead-view'>
@@ -315,14 +332,18 @@ export default function LeadList() {
         {/* 검색 및 정렬 */}
         <FilterBar
           sortingPopupIsOpen={sortingPopupIsOpen}
-          sortingFilter={sortingFilter}
           handleSorting={handleSorting}
           handleClosePopup={() => setSortingPopupIsOpen(false)}
           handleSortingClick={() =>
             setSortingPopupIsOpen((prevState) => !prevState)
           }
+          handleFiltering={(filter) => {
+            setFilter(filter)
+          }}
           sortings={sortings}
+          sorting={sortingFilter}
           filters={filters}
+          filter={filter}
         />
 
         <LeadRecordCard
