@@ -105,7 +105,7 @@ export async function getUserName(data) {
 }
 
 export default function LeadList() {
-  const { user } = useContext(AuthContext)
+  const { authUser } = useContext(AuthContext)
 
   const [data, setData] = useState([])
 
@@ -267,16 +267,16 @@ export default function LeadList() {
 
     if (selectedAction === 'update') {
       const leadRef = doc(db, 'lead', recordId)
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       await updateDoc(leadRef, upsertData)
     }
 
     if (selectedAction === 'create') {
       const leadRef = collection(db, 'lead')
-      upsertData.createdById = user.uid
+      upsertData.createdById = authUser.uid
       upsertData.createdAt = formatCurrentTime()
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       const docRef = await addDoc(leadRef, upsertData)
       recordId = docRef.id

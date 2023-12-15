@@ -24,7 +24,7 @@ const DEFAULT_SORTING = 'createdAt'
 const DEFAULT_FILTER = { name: 'my', korName: '내 고객사' }
 
 export default function AccList() {
-  const { user } = useContext(AuthContext)
+  const { authUser } = useContext(AuthContext)
 
   const [data, setData] = useState([])
 
@@ -199,16 +199,16 @@ export default function AccList() {
 
     if (selectedAction === 'update') {
       const accountRef = doc(db, 'account', recordId)
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       await updateDoc(accountRef, upsertData)
     }
 
     if (selectedAction === 'create') {
       const accountRef = collection(db, 'account')
-      upsertData.createdById = user.uid
+      upsertData.createdById = authUser.uid
       upsertData.createdAt = formatCurrentTime()
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       const docRef = await addDoc(accountRef, upsertData)
       recordId = docRef.id

@@ -23,7 +23,7 @@ const DEFAULT_SORTING = 'createdAt'
 const DEFAULT_FILTER = { name: 'my', korName: '내 영업기회' }
 
 export default function OpptyList() {
-  const { user } = useContext(AuthContext)
+  const { authUser } = useContext(AuthContext)
   const [data, setData] = useState([])
 
   // firestore 데이터 관련 문서 ID 상태
@@ -54,7 +54,6 @@ export default function OpptyList() {
 
   const filters = [
     { name: 'my', korName: '내 영업기회' },
-    { name: 'team', korName: '팀 영업기회' },
     { name: 'all', korName: '모든 영업기회' },
   ]
 
@@ -178,16 +177,16 @@ export default function OpptyList() {
 
     if (selectedAction === 'update') {
       const opptyRef = doc(db, 'opportunity', recordId)
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       await updateDoc(opptyRef, upsertData)
     }
 
     if (selectedAction === 'create') {
       const opptyRef = collection(db, 'opportunity')
-      upsertData.createdById = user.uid
+      upsertData.createdById = authUser.uid
       upsertData.createdAt = formatCurrentTime()
-      upsertData.modifiedById = user.uid
+      upsertData.modifiedById = authUser.uid
       upsertData.modifiedAt = formatCurrentTime()
       const docRef = await addDoc(opptyRef, upsertData)
       recordId = docRef.id
