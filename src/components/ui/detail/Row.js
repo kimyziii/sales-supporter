@@ -5,7 +5,8 @@ export default function DetailRow({ children, textArea }) {
       <div className={className}>{children}</div>
       <style jsx>{`
         .row {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           justify-content: center;
           margin-bottom: 5px;
           width: calc(100% - 40px);

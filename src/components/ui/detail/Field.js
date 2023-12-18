@@ -13,11 +13,14 @@ export default function DetailField({ label, value }) {
           margin: 10px 20px 0 20px;
           align-items: center;
           font-family: 'SUIT-400';
+          word-break: break-all;
         }
 
         .label {
           color: var(--secondary-text-color);
           font-size: var(--caption);
+          display: flex;
+          align-items: center;
         }
 
         .value {

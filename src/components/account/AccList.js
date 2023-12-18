@@ -314,10 +314,10 @@ export default function AccList() {
           padding: 10px;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1010px) {
           .lead-view {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 260px 2fr;
           }
         }
       `}</style>
