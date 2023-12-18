@@ -145,7 +145,7 @@ export default function ProfilePage() {
 
           border: 1px solid var();
           font-family: 'SUIT-400';
-          font-size: 13px;
+          font-size: var(--text-sm);
 
           display: flex;
           flex-direction: row;
@@ -177,11 +177,11 @@ export default function ProfilePage() {
 
         .profile-page__company--cn {
           font-family: 'SUIT-600';
-          font-size: 18px;
+          font-size: var(--text-lg);
         }
 
         .profile-page__company--tn {
-          font-size: 15px;
+          font-size: var(--text-md);
         }
 
         .profile-page__name {
@@ -201,7 +201,7 @@ export default function ProfilePage() {
           justify-content: space-between;
           align-items: center;
           gap: 25px;
-          font-size: 15px;
+          font-size: var(--text-md);
         }
 
         .profile-page__name--nn img {
@@ -218,7 +218,7 @@ export default function ProfilePage() {
         }
 
         .profile-page__name--email {
-          font-size: 13px;
+          font-size: var(--text-sm);
         }
       `}</style>
     </div>

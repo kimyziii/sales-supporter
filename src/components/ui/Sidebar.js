@@ -99,7 +99,7 @@ export default function SideBar() {
           align-items: center;
 
           font-family: 'GyeonggiTitleM';
-          font-size: 12px;
+          font-size: var(--caption);
           cursor: pointer;
         }
 
@@ -121,7 +121,7 @@ export default function SideBar() {
           padding: 10px 0;
 
           font-family: 'GyeonggiTitleM';
-          font-size: 14px;
+          font-size: var(--text-sm);
           cursor: pointer;
         }
 

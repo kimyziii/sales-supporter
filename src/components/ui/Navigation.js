@@ -90,7 +90,7 @@ export default function Navigation() {
 
       <style jsx>{`
         * {
-          font-family: 'GyeonggiTitleM';
+          font-family: 'SUIT-600';
           font-size: var(text-lg);
         }
 

@@ -149,7 +149,7 @@ export default function FilterBar({
 
         .filter-list {
           font-family: 'SUIT-400';
-          font-size: 14px;
+          font-size: var(--text-sm);
           background: white;
           position: absolute;
           text-align: start;
