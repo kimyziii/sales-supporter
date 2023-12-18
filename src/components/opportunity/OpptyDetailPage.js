@@ -2,6 +2,7 @@ import DetailPage from '../ui/detail/Page'
 import DetailSection from '../ui/detail/Section'
 import DetailRow from '../ui/detail/Row'
 import DetailField from '../ui/detail/Field'
+import { addCommas } from '../lead/LeadList'
 
 export default function OpptyDetailPage({ selectedObj }) {
   return (
@@ -10,7 +11,7 @@ export default function OpptyDetailPage({ selectedObj }) {
       <DetailSection sectionTitle='Opportunity Information' lastChild={false}>
         <DetailRow textArea={false}>
           <DetailField label='Opportunity Name' value={selectedObj?.name} />
-          <DetailField label='Amount' value={selectedObj?.amount} />
+          <DetailField label='Amount' value={addCommas(selectedObj?.amount)} />
         </DetailRow>
         <DetailRow textArea={false}>
           <DetailField label='Account Name' value={selectedObj?.accountName} />

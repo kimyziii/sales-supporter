@@ -2,6 +2,7 @@ import DetailPage from '../ui/detail/Page'
 import DetailSection from '../ui/detail/Section'
 import DetailRow from '../ui/detail/Row'
 import DetailField from '../ui/detail/Field'
+import { addCommas } from './LeadList'
 
 export default function LeadDetailPage({ selectedObj }) {
   return (
@@ -15,7 +16,7 @@ export default function LeadDetailPage({ selectedObj }) {
         <DetailRow textArea={false}>
           <DetailField
             label='Number of Employees'
-            value={selectedObj?.employeeNumber}
+            value={addCommas(selectedObj?.employeeNumber)}
           />
         </DetailRow>
       </DetailSection>

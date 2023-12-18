@@ -23,6 +23,36 @@ const DEFAULT_SORTING = 'createdAt'
 const DEFAULT_FILTER = { name: 'my', korName: '내 리드' }
 
 /**
+ * 한화 단위로 천 단위 콤마 삽입
+ * @param {number} 콤마를 삽입하고자 하는 금액
+ * @returns result (ex. 1,000,000)
+ */
+export function addCommas(number) {
+  if (number === 0) return 0
+
+  const numStr = String(number)
+
+  const parts = numStr.split('.')
+  const integer = parts[0]
+  const decimal = parts.length > 1 ? '.' + parts[1] : ''
+
+  let result = ''
+  let count = 0
+
+  for (let i = integer.length - 1; i >= 0; i--) {
+    count++
+    result = integer[i] + result
+    if (count % 3 === 0 && i !== 0) {
+      result = ',' + result
+    }
+  }
+
+  result += decimal
+
+  return result
+}
+
+/**
  * 한국 전화번호에 맞게 전화번호 포맷
  * @param {string} phoneNumber (ex. 01012345678)
  * @returns phoneNumber (ex. 010-1234-5678)

@@ -1,3 +1,5 @@
+import { addCommas } from '../lead/LeadList'
+
 export default function OpptyRecordCard({
   selectedObj,
   handleRecordClick,
@@ -37,7 +39,7 @@ export default function OpptyRecordCard({
               <span>{record.accountName}</span>
               <span> / </span>
               <span>{record.stage}</span>
-              <div>{record.amount}</div>
+              <div>{addCommas(record.amount)}</div>
             </div>
 
             <div className='record-card__system'>
