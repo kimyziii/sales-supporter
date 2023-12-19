@@ -2,6 +2,7 @@ import AuthContext from '@/context/AuthContext'
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   orderBy,
