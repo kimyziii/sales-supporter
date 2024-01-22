@@ -3,6 +3,7 @@
 <br/>
 
 ## Sales Supporter
+[노션으로 가기](https://beautiful-individual-c4b.notion.site/220c008e42b340cf833409e6167b1184?pvs=4)
 
 <br/>
 
@@ -110,3 +111,12 @@
 
 하나의 레코드를 선택하면 오른쪽 창에서 <br/>
 해당 영업기회에 대한 정보와 레코드에 대한 정보를 확인합니다.
+
+
+<br/>
+
+### 개발일지
+https://velog.io/@kimyziii/posts?tag=SalesSupporter
+
+<br/>
+<br/>
