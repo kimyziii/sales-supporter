@@ -3,7 +3,8 @@
 <br/>
 
 ## Sales Supporter
-[노션으로 가기](https://beautiful-individual-c4b.notion.site/220c008e42b340cf833409e6167b1184?pvs=4)
+[노션으로 가기](https://beautiful-individual-c4b.notion.site/220c008e42b340cf833409e6167b1184?pvs=4) <br/>
+배포: https://sales-supporter.vercel.app
 
 <br/>
 
